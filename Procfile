@@ -1,1 +1,1 @@
-web: gunicorn dj_auth-master.wsgi
+web: gunicorn proj_membership.wsgi

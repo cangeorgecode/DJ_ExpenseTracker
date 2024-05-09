@@ -27,20 +27,24 @@ def logout_user(request):
     return redirect('index')
 
 def register_user(request):
-    if request.method == "POST":
-        # form = UserCreationForm(request.POST)
-        form = RegisterUserForm(request.POST)   
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password1']
-            user = authenticate(username=username, password=password)
-            login(request, user)
-            messages.success(request, ("registration successful"))
-            return redirect('index')
+    if request.user.is_superuser: 
+        if request.method == "POST":
+            # form = UserCreationForm(request.POST)
+            form = RegisterUserForm(request.POST)   
+            if form.is_valid():
+                form.save()
+                username = form.cleaned_data['username']
+                password = form.cleaned_data['password1']
+                user = authenticate(username=username, password=password)
+                login(request, user)
+                messages.success(request, ("registration successful"))
+                return redirect('index')
+        else:
+            form = RegisterUserForm()
+        return render(request, 'registration/register_user.html', {'form': form})
     else:
-        form = RegisterUserForm()
-    return render(request, 'registration/register_user.html', {'form': form})
+        messages.success(request, 'You need to be an admin to access this page')
+        return redirect('index')
 
 def update_password(request):
     if request.user.is_authenticated:

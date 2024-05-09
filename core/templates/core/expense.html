@@ -1,34 +1,57 @@
 {% extends 'core/base.html' %}
 {% block content %}
-<div class="container">
-    <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Date added</th>
-            <th scope="col">Item</th>
-            <th scope="col">Cost</th>
-            <th scope="col">Category</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for expense in expenses %}
-          <tr>
-            <td>{{ expense.date_created }}</td>
-            <td>{{ expense.item }}</td>
-            <td>{{ expense.cost }}</td>
-            <td>{{ expense.category }}</td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
+<div class="container pt-4">
+  {% for expense in expenses %}
+  <div class="accordion" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{ expense.id }}" aria-expanded="false" aria-controls="collapseOne">
+          {{ expense.item }} | {{ expense.date_created }} 
+          <div class="d-flex align-items-end flex-column">
+            <div class="mt-auto p-2">
+              {% if expense.status == 'pending' %}
+              <span class="badge rounded-pill text-bg-secondary">Pending</span>
+              {% elif expense.status == 'approved' %}
+              <span class="badge rounded-pill text-bg-success">Approved</span>
+              {% else %}
+              <span class="badge rounded-pill text-bg-danger">Rejected</span>
+              {% endif %}
+            </div>
+            
+          </div>
+          
+        </button>
+      </h2>
+      <div id="{{ expense.id }}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <ul>
+            <li>{{ expense.date_created }}</li>
+            <li>{{ expense.cost }}</li>
+            <li>{{ expense.category }}</li>
+            {% if expense.receipt %}
+              <li><img src="{{ expense.receipt.url }}" alt="{{ expense.receipt }}" width="auto" height="auto"></li>
+            {% endif %}
+          </ul>
+          {% if user.is_superuser %}
+            {% if expense.status != 'approved' %}
+              <form action="" method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <a href="{% url 'approve' expense.id %}">Approve / Reject</a>
+              </form>
+            {% endif %}
+          {% else %}
+              {% if expense.status != 'approved' %}
+                <a href="{% url 'approve' expense.id %}">Edit</a>
+              {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+  {% endfor %}  
 </div>
 
-<div class="container pt-4 text-center">
-    <form action="" method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Add</button>
 
-    </form>
-</div>
 {% endblock content %}

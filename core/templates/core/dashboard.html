@@ -12,8 +12,11 @@
         </div>
         <ul class="list-group list-group-flush">
           <li class="list-group-item">Your email is: {{ user.email }} <a href="{% url 'update_email' %}">Update Email</a></li>
-          <li class="list-group-item">A second item</li>
-          <li class="list-group-item">A third item</li>
+          {% if user.is_superuser %}
+          <li class="list-group-item">You are an admin</li>
+          {% else %}
+          <li class="list-group-item">You are a staff</li>
+          {% endif %}
         </ul>
         <div class="card-body">
           <a href="{% url 'update_password' %}" class="card-link">Update password</a>

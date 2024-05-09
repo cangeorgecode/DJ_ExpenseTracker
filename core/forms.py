@@ -4,9 +4,9 @@ from core.models import Expense
 class AddExpenseForm(forms.ModelForm):
     class Meta:
         model = Expense
-        fields = ('date_created', 'item', 'cost', 'category',)
+        fields = ('date_created', 'item', 'cost', 'category', 'receipt', 'status')
         widgets = {
-            'date_created': forms.widgets.DateInput(attrs={'type': 'date'})
+            'date_created': forms.widgets.DateInput(attrs={'type': 'date'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -28,6 +28,16 @@ class AddExpenseForm(forms.ModelForm):
         self.fields['cost'].help_text = ''
 
         self.fields['category'].label = ''
+        self.fields['category'].empty_label = 'meal'
         self.fields['category'].widget.attrs['class'] = 'form-control'
-        self.fields['category'].widget.attrs['placeholder'] = 'Category'
         self.fields['category'].help_text = ''
+
+        self.fields['receipt'].label = ''
+        self.fields['receipt'].widget.attrs['class'] = 'form-control'
+        self.fields['receipt'].widget.attrs['placeholder'] = 'Category'
+        self.fields['receipt'].help_text = ''
+
+        self.fields['status'].label = ''
+        self.fields['status'].widget.attrs['class'] = 'form-select'
+        self.fields['status'].widget.attrs['placeholder'] = 'Category'
+        self.fields['status'].help_text = ''
